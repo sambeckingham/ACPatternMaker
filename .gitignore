@@ -1,0 +1,9 @@
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Dotnet Trash
+obj/
+bin/
