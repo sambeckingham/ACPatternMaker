@@ -17,11 +17,11 @@ Hopefully I'll have a web for this soon :)
 
 ## Todo
 
-[] Convert main logic into class library
-[] Build CI/CD chain
-[] Test macOS/Linux builds
-[] Build server that can accept images and return QR codes
-[] Webapp so users can upload images in browser and get QR codes
+- [ ] Convert main logic into class library
+- [ ] Build CI/CD chain
+- [ ] Test macOS/Linux builds
+- [ ] Build server that can accept images and return QR codes
+- [ ] Webapp so users can upload images in browser and get QR codes
 
 ## Useful Links
 - https://acpatterns.com/editor
