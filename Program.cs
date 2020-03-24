@@ -1,47 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ImageMagick;
+using QRCoder;
+
 
 namespace ACPatternMaker
 {
     class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            IDictionary<string, string> layout = new Dictionary<string, string>()
+            if (args.Length != 1)
             {
-                {"Title", "00"},
-                {"User ID", "2A"},
-                {"User Name", "3F"},
-                {"Town ID", "40"},
-                {"Town Name", "42"},
-                {"Palette", "58"},
-                {"Pattern Type", "69"},
-                {"Data", "6C"}
-            };
+                Console.WriteLine("AC Pattern Maker only expects one parameter, the path to your image file!");
+                return;
+            }
 
-            var file = File.ReadAllText("./test.acnl", Encoding.UTF8);
-            Console.WriteLine($"\nRaw: {file}");
-
-            var title = file.Substring(int.Parse(layout["Title"], NumberStyles.HexNumber), 42);
-            var userId = file.Substring(int.Parse(layout["User ID"], NumberStyles.HexNumber), 2);
-            var userName = file.Substring(int.Parse(layout["User Name"], NumberStyles.HexNumber), 20);
-            var townId = file.Substring(int.Parse(layout["Town ID"], NumberStyles.HexNumber), 2);
-            var townName = file.Substring(int.Parse(layout["Town Name"], NumberStyles.HexNumber), 20);
-
-            Console.WriteLine($"Title: {title}");
-            Console.WriteLine($"UserID: {userId}");
-            Console.WriteLine($"User Name: {userName}");
-            Console.WriteLine($"Town ID: {townId}");
-            Console.WriteLine($"Town Name: {townName}");
-            
-            // Convert image to AC friendly
-
-            using var image = new MagickImage("./bliss.png");
+            var path = Path.GetFullPath(args[0]);
+            var image = new MagickImage(path);
 
             // Crop and resize
 
@@ -64,32 +43,70 @@ namespace ACPatternMaker
                 return;
             }
 
-            // Build Palette
+            var (paletteString, paletteIndex) = GeneratePaletteInfo(image);
 
+            var index = 1;
+            var builder = new PatternStringBuilder();
+            foreach (var tile in image.CropToTiles(32, 32))
+            {
+                var pixels = tile.GetPixels();
+
+                var leftSide = new List<string>();
+                var rightSide = new List<string>();
+                foreach (var pixel in pixels)
+                {
+                    var x = paletteIndex[pixel.ToColor().ToString()].ToString("X");
+                    if (pixel.X % 2 == 0)
+                    {
+                        rightSide.Add(x);
+                    }
+                    else
+                    {
+                        leftSide.Add(x);
+                    }
+                }
+
+                var zipped = leftSide.Zip(rightSide, (l, r) => $"{l}{r}").ToArray();
+
+                var pixelString = string.Join("", zipped);
+
+                var output = PatternStringBuilder.Build(paletteString, pixelString);
+                var byteOutput = StringToByteArray(output);
+
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(byteOutput, QRCodeGenerator.ECCLevel.M);
+                var qrCode = new QRCode(qrCodeData);
+                var qrCodeImage = qrCode.GetGraphic(7);
+                qrCodeImage.Save($"./tile_{index++}_qr.png", ImageFormat.Png);
+            }
+        }
+
+        private static (string paletteString, Dictionary<string, int> paletteIndex) GeneratePaletteInfo(
+            MagickImage image)
+        {
             var matchedColors = image.Histogram();
 
-            var palleteString = string.Empty;
+            var paletteString = string.Empty;
+            var paletteIndex = new Dictionary<string, int>();
+            var position = 0;
             foreach (var (key, _) in matchedColors)
             {
                 var inGameValue = ColorStrings.Dictionary[key.ToString()];
-                // Array.Reverse(inGameValue);
-                // var reversedValue = string.Concat(inGameValue);
-                palleteString += inGameValue;
+                paletteString += inGameValue;
+                paletteIndex[key.ToString()] = position;
+                position++;
             }
 
-            var finalPalleteString = palleteString.PadRight(30, '0');
+            paletteString = paletteString.PadRight(30, '0');
+            return (paletteString, paletteIndex);
+        }
 
-            Console.Write(finalPalleteString);
-
-            // TODO: Tile and generate strings
-
-            var index = 1;
-            foreach (var tile in image.CropToTiles(32, 32))
-            {
-                // TODO: iterate over pixels, create string and complete file
-            }
-
-            // TODO: Produce QR Codes
+        private static byte[] StringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                .Where(x => x % 2 == 0)
+                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                .ToArray();
         }
 
         private static IEnumerable<MagickColor> GenerateColorProfileImage()
