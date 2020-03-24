@@ -6,10 +6,9 @@ using System.Linq;
 using ImageMagick;
 using QRCoder;
 
-
 namespace ACPatternMaker
 {
-    class Program
+    internal class Program
     {
         private static void Main(string[] args)
         {
@@ -57,13 +56,9 @@ namespace ACPatternMaker
                 {
                     var x = paletteIndex[pixel.ToColor().ToString()].ToString("X");
                     if (pixel.X % 2 == 0)
-                    {
                         rightSide.Add(x);
-                    }
                     else
-                    {
                         leftSide.Add(x);
-                    }
                 }
 
                 var zipped = leftSide.Zip(rightSide, (l, r) => $"{l}{r}").ToArray();

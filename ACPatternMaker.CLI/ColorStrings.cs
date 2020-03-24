@@ -200,7 +200,7 @@ namespace ACPatternMaker
                     {"#363636FF", "bf"},
                     {"#242424FF", "cf"},
                     {"#121212FF", "df"},
-                    {"#000000FF", "ef"},
+                    {"#000000FF", "ef"}
                 };
                 return colorStrings;
             }

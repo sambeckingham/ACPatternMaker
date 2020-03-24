@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ACPatternMaker
+﻿namespace ACPatternMaker
 {
     public class PatternStringBuilder
     {
