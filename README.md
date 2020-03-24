@@ -5,6 +5,8 @@
 Takes an image, formats it into 128x128 and 15-color before splitting it into 16 tiles and 
 generating a QR code so that it can be scanned into Animal Crossing titles.
 
+![London Calling](./londoncalling.jpg)
+
 ## How To Run
 
 Download the .exe from the [Releases](https://github.com/sambeckingham/ACPatternMaker/releases) page
