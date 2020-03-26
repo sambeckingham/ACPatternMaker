@@ -10,7 +10,16 @@ generating a QR code so that it can be scanned into Animal Crossing titles.
 ## How To Run
 
 Download the .exe from the [Releases](https://github.com/sambeckingham/ACPatternMaker/releases) page
-and then in your command line, run it with your image file as the first parameter, e.g.:
+and then either:
+
+#### Drag and Drop
+
+Drag and drop your image file on top of the executable file
+
+#### Command line
+
+In your command line, run it with your image file as the first parameter, e.g. for Windows:
+
 ```sh
 .\ACPatternMaker.exe C:\path\to\awesome\pic.jpg
 ```
