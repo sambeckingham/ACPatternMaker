@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using ACPatternMaker;
 using ACQRGenerator.Interfaces;
@@ -12,15 +13,21 @@ namespace ACQRGenerator
     public class ImageProcessor : IImageProcessor
     {
         private MagickImage _image;
+        private int _width;
+        private int _height;
 
 
-        public void SetImage(string path)
+        public void SetImage(Stream stream, int width = 4, int height = 4)
         {
-            _image = new MagickImage(path);
+            _image = new MagickImage(stream);
+            _width = width;
+            _height = height;
         }
 
         public IEnumerable<Bitmap> GenerateQrCodes()
         {
+
+            // TODO: Shape to the image ratio
             var geometry = new MagickGeometry(128, 128);
             geometry.FillArea = true;
             _image.Resize(geometry);
@@ -68,11 +75,42 @@ namespace ACQRGenerator
                 var qrGenerator = new QRCodeGenerator();
                 var qrCodeData = qrGenerator.CreateQrCode(byteOutput, QRCodeGenerator.ECCLevel.M);
                 var qrCode = new QRCode(qrCodeData);
-                var qrCodeImage = qrCode.GetGraphic(7);
+                var qrCodeImage = qrCode.GetGraphic(4);
                 qrCodes.Add(qrCodeImage);
             }
 
             return qrCodes;
+        }
+
+        public Bitmap GenerateMontage()
+        {
+            var qrCodes = GenerateQrCodes();
+            var first = qrCodes.First();
+            
+            var montage = new Bitmap(_width * first.Width, _height * first.Height);
+            var (x, y) = (0, 0);
+            using (var canvas = Graphics.FromImage(montage))
+            {
+                foreach (var qrCode in GenerateQrCodes())
+                {
+                    if (x < _width)
+                    {
+                        canvas.DrawImage(qrCode, x * first.Width, y * first.Height);
+                        x += 1;
+                    }
+                    else
+                    {
+                        x = 0;
+                        y++;
+                        canvas.DrawImage(qrCode, x * first.Width, y * first.Height);
+                        x += 1;
+                    }
+                }
+
+                canvas.Save();
+            }
+
+            return montage;
         }
 
         private static (string paletteString, Dictionary<string, int> paletteIndex) GeneratePaletteInfo(

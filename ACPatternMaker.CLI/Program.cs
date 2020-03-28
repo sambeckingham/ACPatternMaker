@@ -24,11 +24,12 @@ namespace ACPatternMaker
             var path = Path.GetFullPath(args[0]);
 
             var imageProcessor = serviceProvider.GetService<IImageProcessor>();
+            using var ms = new FileStream(path, FileMode.Open);
 
-            imageProcessor.SetImage(path);
-
+            imageProcessor.SetImage(ms);
+            
             var qrCodes = imageProcessor.GenerateQrCodes();
-
+            
             var index = 1;
             foreach (var qrCode in qrCodes) qrCode.Save($"./tile_{index++}_qr.png", ImageFormat.Png);
         }

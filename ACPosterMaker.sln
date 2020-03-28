@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACQRGenerator", "ACQRGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACPatternMaker", "ACPatternMaker.CLI\ACPatternMaker.csproj", "{63784114-8982-45DC-8F43-05046892E265}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACPosterMaker.Server", "ACPosterMaker.Server\ACPosterMaker.Server.csproj", "{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{63784114-8982-45DC-8F43-05046892E265}.Release|x64.Build.0 = Release|Any CPU
 		{63784114-8982-45DC-8F43-05046892E265}.Release|x86.ActiveCfg = Release|Any CPU
 		{63784114-8982-45DC-8F43-05046892E265}.Release|x86.Build.0 = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|x64.Build.0 = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Debug|x86.Build.0 = Debug|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|x64.ActiveCfg = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|x64.Build.0 = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|x86.ActiveCfg = Release|Any CPU
+		{3342BA17-A1CA-42EC-AD03-20C7D4A75DE1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
