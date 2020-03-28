@@ -1,9 +1,9 @@
-﻿using System;
+﻿﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
-using ACQRGenerator.Interfaces;
+using ImageMagick;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,12 +13,10 @@ namespace ACPosterMaker.Server.Controllers
     [Route("[controller]")]
     public class QrCodeGeneratorController : ControllerBase
     {
-        private readonly ILogger<QrCodeGeneratorController> _logger;
         private readonly IImageProcessor _imageProcessor;
 
-        public QrCodeGeneratorController(ILogger<QrCodeGeneratorController> logger, IImageProcessor imageProcessor)
+        public QrCodeGeneratorController(IImageProcessor imageProcessor)
         {
-            _logger = logger;
             _imageProcessor = imageProcessor;
         }
 
@@ -35,21 +33,13 @@ namespace ACPosterMaker.Server.Controllers
             await using var ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
             _imageProcessor.SetImage(ms);
             var qrCodeMontage = _imageProcessor.GenerateMontage();
-            var bytes = ImageToByteArray(qrCodeMontage);
 
-            return File(bytes, "image/png");
+            return File(qrCodeMontage.ToByteArray(MagickFormat.Png), "image/png");
         }
 
         private static string RemoveDataUrlPrefix(string imageBase64)
         {
             return imageBase64.Substring(23);
-        }
-
-        public byte[] ImageToByteArray(Bitmap imageIn)
-        {
-            var ms = new MemoryStream();
-            imageIn.Save(ms, ImageFormat.Png);
-            return ms.ToArray();
         }
     }
 }

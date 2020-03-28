@@ -1,5 +1,3 @@
-using ACQRGenerator;
-using ACQRGenerator.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +20,6 @@ namespace ACPosterMaker.Server
         {
             services
                 .AddSingleton<IImageProcessor, ImageProcessor>()
-                .AddResponseCompression()
                 .AddControllers();
         }
 
@@ -31,14 +28,10 @@ namespace ACPosterMaker.Server
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
-            app.UseHttpsRedirection();
-
-            app.UseResponseCompression();
-
+            // app.UseHttpsRedirection();
+            
             app.UseRouting();
-
-            app.UseAuthorization();
-
+            
             app.UseCors(options =>
             {
                 options.AllowAnyOrigin();
