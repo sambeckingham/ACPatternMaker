@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  poster-server:
+    image: samuelbeckinghamcook/acpm-server
+    container_name: poster-server
+    networks:
+      - network_1
+    ports:
+      - "8000:80"      
+    labels:
+    - "traefik.frontend.rule=Host:acpostermaker.com/api/"
+
+  poster-server:
+    image: samuelbeckinghamcook/acpm-frontend
+    container_name: poster-frontend
+    networks:
+      - test_network
+      - internal
+    ports:
+      - "8001:80"
+    labels:
+    - "traefik.frontend.rule=Host:localhost/app2"
+
+  reverse-proxy:
+    image: traefik # The official Traefik docker image
+    command: --api --docker # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker eventsdoc
+    networks:
+      - network_1
+
+networks:
+  network_1:
+    external: true
