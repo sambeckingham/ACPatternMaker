@@ -16,6 +16,11 @@ namespace ACPosterMaker.Server
 
         public void SetImage(Stream stream, int width = 4, int height = 4)
         {
+            if (_image != null)
+            {
+                _image.Dispose();
+            }
+
             _image = new MagickImage(stream);
             _width = width;
             _height = height;
@@ -47,17 +52,19 @@ namespace ACPosterMaker.Server
             var qrCodes = new MagickImageCollection();
             foreach (var tile in _image.CropToTiles(32, 32))
             {
-                var pixels = tile.GetPixels();
-
                 var leftSide = new List<string>();
                 var rightSide = new List<string>();
-                foreach (var pixel in pixels)
+
+                using (var pixels = tile.GetPixels())
                 {
-                    var x = paletteIndex[pixel.ToColor().ToString()].ToString("X");
-                    if (pixel.X % 2 == 0)
-                        rightSide.Add(x);
-                    else
-                        leftSide.Add(x);
+                    foreach (var pixel in pixels)
+                    {
+                        var x = paletteIndex[pixel.ToColor().ToString()].ToString("X");
+                        if (pixel.X % 2 == 0)
+                            rightSide.Add(x);
+                        else
+                            leftSide.Add(x);
+                    }
                 }
 
                 var zipped = leftSide.Zip(rightSide, (l, r) => $"{l}{r}").ToArray();
