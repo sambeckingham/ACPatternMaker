@@ -1,9 +1,5 @@
 # https://hub.docker.com/_/microsoft-dotnet-core
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
-RUN apt-get update \
-        && echo 'msttcorefonts msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections \
-        && apt-get install -y --allow-unauthenticated \
-        ttf-mscorefonts-installer*
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
@@ -19,9 +15,11 @@ RUN dotnet publish -c release -o /app
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 RUN apt-get update \
-        && echo 'msttcorefonts msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections \
-        && apt-get install -y --allow-unauthenticated \
-        ttf-mscorefonts-installer*
+ && apt-get install -y cabextract wget xfonts-utils \
+ && curl -s -o ttf-mscorefonts-installer_3.7_all.deb http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.7_all.deb \
+ && sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections" \
+ && dpkg -i ttf-mscorefonts-installer_3.7_all.deb
+
 WORKDIR /app
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "ACPosterMaker.Server.dll"]
