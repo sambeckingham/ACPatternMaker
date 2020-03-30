@@ -1,38 +1,26 @@
 version: '3'
 
 services:
-  poster-server:
-    image: samuelbeckinghamcook/acpm-server
-    container_name: poster-server
-    networks:
-      - network_1
+  reverse-proxy:
+    # The official v2.0 Traefik docker image
+    image: traefik:latest
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker --api.dashboard=true
     ports:
-      - "8000:80"      
-    labels:
-    - "traefik.frontend.rule=Host:acpostermaker.com/api/"
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
 
   poster-server:
-    image: samuelbeckinghamcook/acpm-frontend
-    container_name: poster-frontend
-    networks:
-      - test_network
-      - internal
+    image: samuelbeckinghamcook/acpm-server
     ports:
       - "8001:80"
     labels:
-    - "traefik.frontend.rule=Host:localhost/app2"
+      - "traefik.http.routers.poster-server.rule=Host(`acpostermaker.com`) && PathPrefix(`/api/`)"
 
-  reverse-proxy:
-    image: traefik # The official Traefik docker image
-    command: --api --docker # Enables the web UI and tells Traefik to listen to docker
-    ports:
-      - "80:80"     # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker eventsdoc
-    networks:
-      - network_1
-
-networks:
-  network_1:
-    external: true
+  poster-frontend:
+    image: samuelbeckinghamcook/acpm-frontend
+    labels:
+      - "traefik.http.routers.poster-frontend.rule=Host(`acpostermaker.com`)"

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace ACPosterMaker.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class QrCodeGeneratorController : ControllerBase
     {
         private readonly IImageProcessor _imageProcessor;
@@ -27,6 +27,11 @@ namespace ACPosterMaker.Server.Controllers
             var requestBody = await reader.ReadToEndAsync();
             reader.Close();
 
+            if (requestBody.Length < 23)
+            {
+                return new FileContentResult(new byte[]{}, "text/plain");
+            }
+            
             var imageBase64 = RemoveDataUrlPrefix(requestBody);
             var imageBytes = Convert.FromBase64String(imageBase64);
             
